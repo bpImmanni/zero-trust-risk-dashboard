@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: zt_redis
+    ports:
+      - "6379:6379"
+
+  risk_service:
+    build: ./extensions/risk_service
+    container_name: zt_risk
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+    ports:
+      - "8080:8080"
+
+  zt_dashboard:
+    build: ./extensions/zt-dashboard
+    container_name: zt_dashboard
+    depends_on:
+      - risk_service
+    ports:
+      - "5173:80"
